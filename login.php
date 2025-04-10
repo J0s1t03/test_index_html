@@ -1,25 +1,42 @@
 <?php
+// Simulación de base de datos de usuarios (en un caso real, usarías una base de datos)
+$valid_users = [
+    'usuario1' => 'password123',
+    'usuario2' => 'contraseña456',
+];
 
-$post_from_json = file_get_contents("php://input");
-$logfile = fopen("login.log", "w") or die("Logging error, please try again...");
-$values_to_log = "1.1.1.1 - - [17/04/2012:04:20:69 +0000] \"POST /foo/245623412.html HTTP1.1\" 404"
-//valores de nginx para generar logs por defecto: 
-/*log_format combined '$remote_addr - $remote_user [$time_local] '
-                      '"$request" $status $body_bytes_sent '
-                      '"$http_referer" "$http_user_agent"';
-*/
-echo $post_from_json; //cause console.log($json) is for the weak
+// Obtener los datos del formulario
+$username = $_POST['username'] ?? '';
+$password = $_POST['password'] ?? '';
 
-if($post_from_json == "foo"){
-    header("HTTP/1.1 200 OK");
+// Ruta del archivo de log
+$logfile = 'login_attempts.log';
+
+// Función para escribir en el archivo de log
+function log_attempt($username, $success) {
+    global $logfile;
+
+    // Obtener la fecha y hora actual
+    $timestamp = date('Y-m-d H:i:s');
+    
+    // Determinar el resultado del intento de login
+    $result = $success ? 'Éxito' : 'Fallido';
+    
+    // Crear la entrada en el log
+    $log_entry = "[$timestamp] Usuario: $username - Intento: $result\n";
+
+    // Escribir en el archivo de log
+    file_put_contents($logfile, $log_entry, FILE_APPEND);
 }
-else{
-    header("HTTP/1.1 401 Unauthorized");
-    //header("Location: error_page.html");
+
+// Verificar si el usuario y la contraseña son correctos
+if (isset($valid_users[$username]) && $valid_users[$username] === $password) {
+    // Login exitoso
+    log_attempt($username, true); // Escribir en el log con resultado exitoso
+    echo json_encode(['success' => true]);
+} else {
+    // Login fallido
+    log_attempt($username, false); // Escribir en el log con resultado fallido
+    echo json_encode(['success' => false]);
 }
-
-fwrite($logfile, $values_to_log);
-fclose($logfile);
-//crear y unsetear sesión para replicar login valido
-
 ?>
