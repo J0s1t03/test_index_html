@@ -9,11 +9,14 @@ $valid_users = [
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
+// Obtener la dirección IP del cliente
+$user_ip = $_SERVER['REMOTE_ADDR'];
+
 // Ruta del archivo de log
 $logfile = 'login_attempts.log';
 
 // Función para escribir en el archivo de log
-function log_attempt($username, $success) {
+function log_attempt($username, $user_ip, $success) {
     global $logfile;
 
     // Obtener la fecha y hora actual
@@ -23,7 +26,7 @@ function log_attempt($username, $success) {
     $result = $success ? 'Éxito' : 'Fallido';
     
     // Crear la entrada en el log
-    $log_entry = "[$timestamp] Usuario: $username - Intento: $result\n";
+    $log_entry = "[$timestamp] IP: $user_ip - Usuario: $username - Intento: $result\n";
 
     // Escribir en el archivo de log
     file_put_contents($logfile, $log_entry, FILE_APPEND);
@@ -32,11 +35,11 @@ function log_attempt($username, $success) {
 // Verificar si el usuario y la contraseña son correctos
 if (isset($valid_users[$username]) && $valid_users[$username] === $password) {
     // Login exitoso
-    log_attempt($username, true); // Escribir en el log con resultado exitoso
+    log_attempt($username, $user_ip, true); // Escribir en el log con resultado exitoso
     echo json_encode(['success' => true]);
 } else {
     // Login fallido
-    log_attempt($username, false); // Escribir en el log con resultado fallido
+    log_attempt($username, $user_ip, false); // Escribir en el log con resultado fallido
     echo json_encode(['success' => false]);
 }
 ?>
