@@ -4,8 +4,8 @@ session_start();
 
 // Simulación de base de datos de usuarios (en un caso real, usarías una base de datos)
 $valid_users = [
-    'usuario1' => 'password123',
-    'usuario2' => 'contraseña456',
+    'daniel' => 'trustnoone',
+    'miguel' => 'god999',
 ];
 
 // Obtener los datos del formulario
