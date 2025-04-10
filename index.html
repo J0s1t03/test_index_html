@@ -82,17 +82,41 @@
         const errorMessage = document.getElementById('errorMessage');
 
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
+            e.preventDefault(); // Evita el envío tradicional del formulario
+
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
             if (username === '' || password === '') {
                 errorMessage.textContent = 'Por favor, completa ambos campos.';
             } else {
-                errorMessage.textContent = ''; 
-                alert('Login exitoso');
-                // Agregar el código para procesar el login haciendo una solicitud a un servidor
+                errorMessage.textContent = ''; // Limpiar el mensaje de error
+
+                // Enviar los datos al servidor con fetch
+                fetch('login.php', { // Cambia esta URL por la de tu servidor
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json' // Indicamos que los datos se enviarán como JSON
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                })
+                .then(response => response.json()) // Convertir la respuesta en JSON
+                .then(data => {
+                    if (data.success) {
+                        // Si el login es exitoso, redirigir al dashboard
+                        window.location.href = '/dashboard'; // Cambia esto por la URL del panel o dashboard
+                    } else {
+                        // Si el login falla, mostrar el mensaje de error
+                        errorMessage.textContent = 'Usuario o contraseña incorrectos.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorMessage.textContent = 'Hubo un problema al intentar iniciar sesión. Intenta más tarde.';
+                });
             }
         });
     </script>
