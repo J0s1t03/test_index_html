@@ -8,3 +8,4 @@ session_destroy();  // Destruye la sesión
 header('Location: index.html');  // Redirigir al login
 exit();
 ?>
+ 
