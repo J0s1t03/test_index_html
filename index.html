@@ -92,16 +92,13 @@
             } else {
                 errorMessage.textContent = ''; // Limpiar el mensaje de error
 
-                // Enviar los datos al servidor con fetch
-                fetch('login.php', { // Cambia esta URL por la de tu servidor
+                // Enviar los datos al servidor con fetch, apuntando al archivo login.php
+                fetch('login.php', { // Cambia la URL a tu archivo PHP
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json' // Indicamos que los datos se enviarán como JSON
+                        'Content-Type': 'application/x-www-form-urlencoded' // Usamos el tipo 'application/x-www-form-urlencoded' para POST
                     },
-                    body: JSON.stringify({
-                        username: username,
-                        password: password
-                    })
+                    body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
                 })
                 .then(response => response.json()) // Convertir la respuesta en JSON
                 .then(data => {
