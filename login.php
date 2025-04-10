@@ -1,4 +1,7 @@
 <?php
+// Iniciar sesión
+session_start();
+
 // Simulación de base de datos de usuarios (en un caso real, usarías una base de datos)
 $valid_users = [
     'usuario1' => 'password123',
@@ -36,10 +39,16 @@ function log_attempt($username, $user_ip, $success) {
 if (isset($valid_users[$username]) && $valid_users[$username] === $password) {
     // Login exitoso
     log_attempt($username, $user_ip, true); // Escribir en el log con resultado exitoso
-    echo json_encode(['success' => true]);
+    
+    // Guardar el estado de login en la sesión
+    $_SESSION['logged_in'] = true;
+    $_SESSION['username'] = $username;
+
+    // Retornar respuesta JSON y redirigir al dashboard
+    echo json_encode(['success' => true, 'redirect' => 'dashboard.php']);  // Indicamos que se redirija a dashboard.php
 } else {
     // Login fallido
     log_attempt($username, $user_ip, false); // Escribir en el log con resultado fallido
-    echo json_encode(['success' => false]);
+    echo json_encode(['success' => false]);  // Solo devolvemos el estado de fallo
 }
 ?>
